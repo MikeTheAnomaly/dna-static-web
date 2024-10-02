@@ -143,7 +143,7 @@
 
   <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: false; precision: high; far: 100; near: 1" embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
     <a-nft debug="true" type="nft" smooth="true" url="./testing" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nftMarker">
-      <a-entity id="ScaleModel" gltf-model="./ScaleModel.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="100 0 100" emit-events="true"></a-entity>
+      <a-entity id="ScaleModel" gltf-model="./ScaleModel.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
       <!-- Images will be appended here dynamically -->
     </a-nft>
 
@@ -367,9 +367,9 @@
 
           // Apply calibration position offsets
           const position = {
-            x: x + calibrationData.positionOffset.x + 300,
+            x: x + calibrationData.positionOffset.x ,
             y: y + calibrationData.positionOffset.y,
-            z: z + calibrationData.positionOffset.z-150
+            z: z + calibrationData.positionOffset.z
           };
 
           imgEl.setAttribute('position', position);
