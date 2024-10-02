@@ -41,13 +41,14 @@
     <!-- url="https://miketheanomaly.github.io/webARCon/MelButterfly"-->
     <!-- https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex -->
     <a-nft
+    debug="true"
       type="nft"
       smooth="true"
       url="./testing"
       smoothCount="10"
       smoothTolerance=".01"
       smoothThreshold="5"
-      size="0.2413 0.2413 1"
+      size="0.2413 1 0.2413"
     >
       <a-entity
         gltf-model="./Flamingo.glb"
@@ -58,11 +59,22 @@
       >
       </a-entity>
 
-      <a-entity
-        position="0 0 0"
-        text="value: Hello AR World; color: #FFFFFF; width: 4; align: center;"
-      ></a-entity>
-     
+      <a-box color="red" 
+      scale="50 0 50"
+      position="241 0 -241"
+      ></a-box> 
+      <a-box color="red" 
+      scale="50 0 50"
+      position="0 0 -241"
+      ></a-box> 
+      <a-box color="red" 
+      scale="50 0 50"
+      position="0 0 0"
+      ></a-box> 
+      <a-box color="red" 
+      scale="50 0 50"
+      position="241 0 0"
+      ></a-box> 
     </a-nft>
     
     <a-entity camera> </a-entity>
