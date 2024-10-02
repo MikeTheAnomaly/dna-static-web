@@ -24,24 +24,41 @@
     font-size: 1.25em;
     color: white;
   }
+
+  /* Styles for the control buttons */
+  .control-button {
+    position: absolute;
+    z-index: 10000; /* Ensure buttons are on top of AR scene */
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* Positioning the buttons */
+  #moveLeft { top: 50%; left: 10px; transform: translateY(-50%); }
+  #moveRight { top: 50%; right: 10px; transform: translateY(-50%); }
+  #moveUp { top: 10px; left: 50%; transform: translateX(-50%); }
+  #moveDown { bottom: 10px; left: 50%; transform: translateX(-50%); }
+  #scaleUp { bottom: 60px; right: 10px; }
+  #scaleDown { bottom: 110px; right: 10px; }
 </style>
 
-<body style="margin : 0px; overflow: hidden;">
+<body style="margin: 0; overflow: hidden;">
   <!-- minimal loader shown until image descriptors are loaded -->
   <div class="arjs-loader">
     <div>Loading, please wait...</div>
   </div>
+
   <a-scene
     vr-mode-ui="enabled: false;"
     renderer="logarithmicDepthBuffer: false; precision: high; far: 100; near: 1"
     embedded
     arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
-    <!-- we use cors proxy to avoid cross-origin problems ATTENTION! you need to set up your server -->
-    <!-- url="https://miketheanomaly.github.io/webARCon/MelButterfly"-->
-    <!-- https://raw.githack.com/AR-js-org/AR.js/master/aframe/examples/image-tracking/nft/trex/trex-image/trex -->
     <a-nft
-    debug="true"
+      debug="true"
       type="nft"
       smooth="true"
       url="./testing"
@@ -50,36 +67,82 @@
       smoothThreshold="5"
     >
       <a-entity
-        gltf-model="./Flamingo.glb"
+        id="ScaleModel"
+        gltf-model="./ScaleModel.glb"
         animation-mixer="loop: pingpong;"
-        scale="1 1 1"
-        position="0 0 0"
-        emiteevents="true"
-      >
-      </a-entity>
-
-      <a-box color="red" 
-      scale="50 0 50"
-      position="241 0 -241"
-      ></a-box> 
-      <a-box color="red" 
-      scale="50 0 50"
-      position="0 0 -241"
-      ></a-box> 
-      <a-box color="red" 
-      scale="50 0 50"
-      position="0 0 0"
-      ></a-box> 
-      <a-box color="red" 
-      scale="50 0 50"
-      position="241 0 0"
-      ></a-box> 
+        scale="2147 2147 2147"
+        position="100 0 100"
+        emit-events="true"
+      ></a-entity>
     </a-nft>
     
-    <a-entity camera> </a-entity>
+    <a-entity camera></a-entity>
   </a-scene>
 
+  <!-- Control Buttons -->
+  <button id="moveLeft" class="control-button">Left</button>
+  <button id="moveRight" class="control-button">Right</button>
+  <button id="moveUp" class="control-button">Up</button>
+  <button id="moveDown" class="control-button">Down</button>
+  <button id="scaleUp" class="control-button">Scale Up</button>
+  <button id="scaleDown" class="control-button">Scale Down</button>
 
-  </body>
+  <!-- Script for interaction logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Cache the ScaleModel entity
+      const scaleModelEl = document.querySelector('#ScaleModel');
+
+      if (!scaleModelEl) {
+        console.error('ScaleModel entity not found');
+        return;
+      }
+
+      // Function to update position
+      function updatePosition(axis, delta) {
+        const position = scaleModelEl.getAttribute('position');
+        position[axis] += delta;
+        scaleModelEl.setAttribute('position', position);
+        console.log('Updated Position:', position);
+      }
+
+      // Function to update scale
+      function updateScale(factor) {
+        const scale = scaleModelEl.getAttribute('scale');
+        scale.x *= factor;
+        scale.y *= factor;
+        scale.z *= factor;
+        scaleModelEl.setAttribute('scale', scale);
+        console.log('Updated Scale:', scale);
+
+      }
+
+      let moveAmount = 500;
+      // Event listeners for buttons
+      document.getElementById('moveLeft').addEventListener('click', function () {
+        updatePosition('x', -0.1 * moveAmount);
+      });
+
+      document.getElementById('moveRight').addEventListener('click', function () {
+        updatePosition('x', 0.1 * moveAmount);
+      });
+
+      document.getElementById('moveUp').addEventListener('click', function () {
+        updatePosition('z', -0.1 * moveAmount);
+      });
+
+      document.getElementById('moveDown').addEventListener('click', function () {
+        updatePosition('z', 0.1 * moveAmount);
+      });
+
+      document.getElementById('scaleUp').addEventListener('click', function () {
+        updateScale(1.1);
+      });
+
+      document.getElementById('scaleDown').addEventListener('click', function () {
+        updateScale(0.9);
+      });
+    });
+  </script>
+</body>
 </html>
-
