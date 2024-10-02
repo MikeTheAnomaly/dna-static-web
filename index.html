@@ -124,6 +124,7 @@
     smoothCount="10"
     smoothTolerance=".01"
     smoothThreshold="5"
+    id="nftMarker"
   >
     <a-entity
       id="ScaleModel"
@@ -133,9 +134,9 @@
       position="100 0 100"
       emit-events="true"
     ></a-entity>
+    <!-- Images will be appended here dynamically -->
   </a-nft>
 
-  <a-entity camera></a-entity>
 </a-scene>
 
 <!-- Script for interaction logic -->
@@ -243,6 +244,109 @@
       alert('Calibration data saved.');
       controlButtons.classList.add('hidden');
     });
+
+    // JSON data of photos
+    const photoData = {
+      "id": 4,
+      "result": {
+        "provider": "google-photos",
+        "url": "https://photos.app.goo.gl/aGYZ8szkrFYThMX78",
+        "id": null,
+        "title": "PUBLIC: DNA Wedding",
+        "description": "10 new items added to shared album",
+        "mediaItems": [
+          {
+            "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
+            "description": null,
+            "url": "https://lh3.googleusercontent.com/pw/AP1GczN4Cp0VQHR1Mthw7fWeQoFc1FtaxpWfnmvtobUPaalOSuP037u-E9dvb27-1coqZujnOftKak20G52qwnLv5LuRwyjApIypINi2Pa9xnTdxiqXNpN0r=w1920-h1080",
+            "mimetype": null,
+            "mediaMetadata": null
+          },
+          // ... other media items ...
+          {
+            "id": "AF1QipMR0mecKjjVKxYoc5ctNJ2IFDOUD-h1bad8kart",
+            "description": null,
+            "url": "https://lh3.googleusercontent.com/pw/AP1GczM6cOffz6KyXBV7CmQDA1J6vi4suv0ijjUr2DPo_Oq9au5onaCeUj20jZF9pcvURrfNY-bCdBlbZMOfBpvVkpRprwmd3DhYggMKz1cFx4EoqVkZskFd=w1920-h1080",
+            "mimetype": null,
+            "mediaMetadata": null
+          }
+        ],
+        "version": 1,
+        "timestamp": 1727886887
+      }
+    };
+
+    // Function to create images dynamically
+    function createImages() {
+      const mediaItems = photoData.result.mediaItems;
+      if (!mediaItems || mediaItems.length === 0) {
+        console.warn('No media items found in photo data.');
+        return;
+      }
+
+      const nftMarker = document.querySelector('#nftMarker');
+
+      // Cache images array
+      const images = [];
+
+      // Parameters for positioning
+      const radius = 30; // Adjust as needed
+      const angleIncrement = (2 * Math.PI) / mediaItems.length;
+
+      for (let i = 0; i < mediaItems.length; i++) {
+        const mediaItem = mediaItems[i];
+
+        const imgEl = document.createElement('a-image');
+        imgEl.setAttribute('src', mediaItem.url);
+        imgEl.setAttribute('width', 1);  // Adjust image size as needed
+        imgEl.setAttribute('height', 1);
+
+        // Calculate position in a circle
+        const angle = i * angleIncrement;
+        const x = radius * Math.cos(angle);
+        const z = radius * Math.sin(angle);
+        const y = 1; // Height above the marker
+
+        // Apply calibration position offsets
+        const position = {
+          x: x ,
+          y: y ,
+          z: z 
+        };
+
+        imgEl.setAttribute('position', position);
+
+        // Apply calibration scale multiplier
+        const scaleMultiplier = calibrationData.scaleMultiplier || 1;
+        imgEl.setAttribute('scale', {
+          x: 100,
+          y: 100,
+          z: 100 
+        });
+
+        imgEl.setAttribute('rotation', {
+          x: 90,
+          y: 0,
+          z: 0
+        });
+
+        // Cache the image element
+        images.push(imgEl);
+
+        // Append to the marker
+        nftMarker.appendChild(imgEl);
+      }
+
+      // Optionally, store the images array for future use
+    }
+
+    // Create images when the scene is loaded
+    const sceneEl = document.querySelector('a-scene');
+    if (sceneEl.hasLoaded) {
+      createImages();
+    } else {
+      sceneEl.addEventListener('loaded', createImages);
+    }
   });
 </script>
 </body>
