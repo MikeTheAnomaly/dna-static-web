@@ -367,9 +367,9 @@
 
           // Apply calibration position offsets
           const position = {
-            x: x + calibrationData.positionOffset.x + 100,
+            x: x + calibrationData.positionOffset.x + 300,
             y: y + calibrationData.positionOffset.y,
-            z: z + calibrationData.positionOffset.z
+            z: z + calibrationData.positionOffset.z-150
           };
 
           imgEl.setAttribute('position', position);
@@ -377,9 +377,9 @@
           // Apply calibration scale multiplier
           const scaleMultiplier = calibrationData.scaleMultiplier || 1;
           imgEl.setAttribute('scale', {
-            x: 100,
-            y: 100,
-            z: 100
+            x: 200,
+            y: 200,
+            z: 200
           });
 
           imgEl.setAttribute('rotation', {
