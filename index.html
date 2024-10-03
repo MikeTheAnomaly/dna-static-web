@@ -142,8 +142,14 @@
   </div>
 
   <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: false; precision: high; far: 100; near: 1" embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
-    <a-nft debug="true" type="nft" smooth="true" url="./testing" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nftMarker">
+    <a-nft markerhandler debug="true" type="nft" smooth="true" url="./testing" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nftMarker">
       <a-entity id="ScaleModel" gltf-model="./ScaleModel.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
+      <a-entity id="bird1" gltf-model="./Bird1.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
+      <a-entity id="bird2" gltf-model="./Bird2.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
+      <a-entity id="bird3" gltf-model="./Bird3.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
+      <a-entity id="bird4" gltf-model="./Bird4.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
+      <a-entity id="bird5" gltf-model="./Bird5.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
+      <a-entity id="bird6" gltf-model="./Bird6.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
       <!-- Images will be appended here dynamically -->
     </a-nft>
 
@@ -154,6 +160,15 @@
     document.addEventListener('DOMContentLoaded', function () {
       // Cache the ScaleModel entity
       const scaleModelEl = document.querySelector('#ScaleModel');
+      const bird1El = document.querySelector('#bird1');
+      const bird2El = document.querySelector('#bird2');
+      const bird3El = document.querySelector('#bird3');
+      const bird4El = document.querySelector('#bird4');
+      const bird5El = document.querySelector('#bird5');
+      const bird6El = document.querySelector('#bird6');
+      scaleModelEl.setAttribute('visible', false);
+
+      setupAnimationListeners();
 
       if (!scaleModelEl) {
         console.error('ScaleModel entity not found');
@@ -163,6 +178,7 @@
       // Store initial position and scale
       const initialPosition = Object.assign({}, scaleModelEl.getAttribute('position'));
       const initialScale = Object.assign({}, scaleModelEl.getAttribute('scale'));
+
 
       let calibrationData = {
         positionOffset: { x: 0, y: 0, z: 0 },
@@ -184,6 +200,12 @@
           z: initialPosition.z + calibrationData.positionOffset.z
         };
         scaleModelEl.setAttribute('position', position);
+        bird1El.setAttribute('position', position);
+        bird2El.setAttribute('position', position);
+        bird3El.setAttribute('position', position);
+        bird4El.setAttribute('position', position);
+        bird5El.setAttribute('position', position);
+        bird6El.setAttribute('position', position);
 
         const scale = {
           x: initialScale.x * calibrationData.scaleMultiplier,
@@ -191,6 +213,12 @@
           z: initialScale.z * calibrationData.scaleMultiplier
         };
         scaleModelEl.setAttribute('scale', scale);
+        bird1El.setAttribute('scale', scale);
+        bird2El.setAttribute('scale', scale);
+        bird3El.setAttribute('scale', scale);
+        bird4El.setAttribute('scale', scale);
+        bird5El.setAttribute('scale', scale);
+        bird6El.setAttribute('scale', scale);
       }
 
       // Functions to update position and scale
@@ -246,6 +274,7 @@
       calibrateButton.addEventListener('click', function () {
         controlButtons.classList.toggle('hidden');
         menuContent.classList.add('hidden'); // Hide menu after clicking calibrate
+        scaleModelEl.setAttribute('visible', scaleModelEl.getAttribute('visible') === false);
       });
 
       // Handle save calibration button
@@ -334,6 +363,54 @@
         }
       }
 
+      function setupAnimationListeners() {
+        const nftMarker = document.querySelector('#nftMarker');
+        bird1.pause();
+        bird2.pause();
+        bird3.pause();
+        bird1.addEventListener('animation-loop', () => {
+          console.log('Animation Finished');
+          //scaleModelEl.clip('*');
+          bird1.play();
+          bird3.play();
+          bird2.play();
+        })
+        nftMarker.addEventListener('markerFound', () => {
+          console.log('Marker Found');
+          bird1.play();
+          bird3.play();
+          bird2.play();
+        })
+        nftMarker.addEventListener('markerLost', () => {
+          console.log('Marker Found');
+          bird1.pause();
+          bird2.pause();
+          bird3.pause();
+        })
+        bird4.pause();
+        bird5.pause();
+        bird6.pause();
+        bird4.addEventListener('animation-loop', () => {
+          console.log('Animation Finished');
+          bird4.play();
+          bird5.play();
+          bird6.play();
+        });
+        nftMarker.addEventListener('markerFound', () => {
+          console.log('Marker Found');
+          bird4.play();
+          bird5.play();
+          bird6.play();
+        });
+        nftMarker.addEventListener('markerLost', () => {
+          console.log('Marker Lost');
+          bird4.pause();
+          bird5.pause();
+          bird6.pause();
+        });
+      }
+
+
       // Function to create images dynamically
       function createImages() {
         const mediaItems = photoData.result.mediaItems;
@@ -367,7 +444,7 @@
 
           // Apply calibration position offsets
           const position = {
-            x: x + calibrationData.positionOffset.x ,
+            x: x + calibrationData.positionOffset.x,
             y: y + calibrationData.positionOffset.y,
             z: z + calibrationData.positionOffset.z
           };
