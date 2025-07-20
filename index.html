@@ -1,115 +1,19 @@
 <!DOCTYPE html>
 <html>
 
-<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
-<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
-
-<style>
-  .arjs-loader {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .arjs-loader div {
-    text-align: center;
-    font-size: 1.25em;
-    color: white;
-  }
-
-  /* Styles for the hamburger menu */
-  .hamburger-menu {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 10000;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-  }
-
-  .hamburger-menu div {
-    width: 100%;
-    height: 4px;
-    background-color: white;
-    margin: 5px 0;
-  }
-
-  /* Menu Content */
-  .menu-content {
-    position: absolute;
-    top: 50px;
-    right: 10px;
-    z-index: 10000;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 10px;
-    border-radius: 5px;
-  }
-
-  /* Styles for the control buttons */
-  .control-button {
-    position: absolute;
-    z-index: 10000;
-    background-color: rgba(255, 255, 255, 0.7);
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-
-  /* Positioning the buttons */
-  #moveLeft {
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
-  }
-
-  #moveRight {
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-  }
-
-  #moveUp {
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  #moveDown {
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  #scaleUp {
-    bottom: 60px;
-    right: 10px;
-  }
-
-  #scaleDown {
-    bottom: 110px;
-    right: 10px;
-  }
-
-  #saveCalibration {
-    bottom: 160px;
-    right: 10px;
-  }
-
-  /* Hidden class */
-  .hidden {
-    display: none;
-  }
-</style>
+<head>
+  <meta charset="UTF-8">
+  <title>DNA Static Web AR</title>
+  
+  <!-- External CSS -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Load CameraManager early for initialization -->
+  <script src="js/cameraManager.js"></script>
+  <!-- External JavaScript Libraries -->
+  <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
 </head>
 
 <body style="margin: 0; overflow: hidden;">
@@ -127,7 +31,38 @@
 
   <!-- Menu Content -->
   <div id="menuContent" class="menu-content hidden">
-    <button id="calibrateButton">Calibrate</button>
+    <div class="menu-header">
+      <h3>AR Controls</h3>
+    </div>
+    <div class="menu-buttons">
+      <button id="calibrateButton" class="menu-button">
+        <span class="button-icon">⚙️</span>
+        <span class="button-text">Calibrate</span>
+      </button>
+      <button id="selectCameraButton" class="menu-button">
+        <span class="button-icon">📷</span>
+        <span class="button-text">Select Camera</span>
+      </button>
+      <button id="layoutToggleButton" class="menu-button">
+        <span class="button-icon">🎯</span>
+        <span class="button-text">Grid Layout</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Camera Selection Modal -->
+  <div id="cameraModal" class="camera-modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Select Camera</h3>
+        <button id="closeCameraModal" class="close-button">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="cameraList" class="camera-list">
+          <div class="loading">Loading cameras...</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Control Buttons -->
@@ -141,7 +76,28 @@
     <button id="saveCalibration" class="control-button">Save Calibration</button>
   </div>
 
-  <a-scene vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: false; precision: high; far: 100; near: 1" embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+  
+  <!-- Camera Pre-initialization Script -->
+  <script>
+    // Initialize camera configuration before AR.js starts
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize camera configuration immediately
+      if (window.CameraManager) {
+        CameraManager.initializeBeforeARJS();
+      }
+    });
+  </script>
+
+  <a-scene 
+    vr-mode-ui="enabled: false;" 
+    renderer="logarithmicDepthBuffer: false; precision: high; far: 100; near: 1" 
+    embedded 
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    look-controls="enabled: false"
+    wasd-controls="enabled: false"
+    touch-controls="enabled: false"
+    cursor="rayOrigin: mouse"
+    >
     <a-nft markerhandler debug="true" type="nft" smooth="true" url="./testing" smoothCount="10" smoothTolerance=".01" smoothThreshold="5" id="nftMarker">
       <a-entity id="ScaleModel" gltf-model="./ScaleModel.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
       <a-entity id="bird1" gltf-model="./Bird1.glb" animation-mixer="loop: pingpong;" scale="2147 2147 2147" position="0 0 0" emit-events="true"></a-entity>
@@ -155,335 +111,15 @@
 
   </a-scene>
 
-  <!-- Script for interaction logic -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Cache the ScaleModel entity
-      const scaleModelEl = document.querySelector('#ScaleModel');
-      const bird1El = document.querySelector('#bird1');
-      const bird2El = document.querySelector('#bird2');
-      const bird3El = document.querySelector('#bird3');
-      const bird4El = document.querySelector('#bird4');
-      const bird5El = document.querySelector('#bird5');
-      const bird6El = document.querySelector('#bird6');
-      scaleModelEl.setAttribute('visible', false);
-
-      setupAnimationListeners();
-
-      if (!scaleModelEl) {
-        console.error('ScaleModel entity not found');
-        return;
-      }
-
-      // Store initial position and scale
-      const initialPosition = Object.assign({}, scaleModelEl.getAttribute('position'));
-      const initialScale = Object.assign({}, scaleModelEl.getAttribute('scale'));
-
-
-      let calibrationData = {
-        positionOffset: { x: 0, y: 0, z: 0 },
-        scaleMultiplier: 1
-      };
-
-      // Load calibration data from local storage
-      const savedCalibration = localStorage.getItem('calibrationData');
-      if (savedCalibration) {
-        calibrationData = JSON.parse(savedCalibration);
-        applyCalibrationData();
-      }
-
-      function applyCalibrationData() {
-        // Apply the calibration data to the model
-        const position = {
-          x: initialPosition.x + calibrationData.positionOffset.x,
-          y: initialPosition.y + calibrationData.positionOffset.y,
-          z: initialPosition.z + calibrationData.positionOffset.z
-        };
-        scaleModelEl.setAttribute('position', position);
-        bird1El.setAttribute('position', position);
-        bird2El.setAttribute('position', position);
-        bird3El.setAttribute('position', position);
-        bird4El.setAttribute('position', position);
-        bird5El.setAttribute('position', position);
-        bird6El.setAttribute('position', position);
-
-        const scale = {
-          x: initialScale.x * calibrationData.scaleMultiplier,
-          y: initialScale.y * calibrationData.scaleMultiplier,
-          z: initialScale.z * calibrationData.scaleMultiplier
-        };
-        scaleModelEl.setAttribute('scale', scale);
-        bird1El.setAttribute('scale', scale);
-        bird2El.setAttribute('scale', scale);
-        bird3El.setAttribute('scale', scale);
-        bird4El.setAttribute('scale', scale);
-        bird5El.setAttribute('scale', scale);
-        bird6El.setAttribute('scale', scale);
-      }
-
-      // Functions to update position and scale
-      function updatePosition(axis, delta) {
-        calibrationData.positionOffset[axis] += delta;
-        applyCalibrationData();
-        console.log('Updated Position Offset:', calibrationData.positionOffset);
-      }
-
-      function updateScale(factor) {
-        calibrationData.scaleMultiplier *= factor;
-        applyCalibrationData();
-        console.log('Updated Scale Multiplier:', calibrationData.scaleMultiplier);
-      }
-
-      let moveAmount = 50; // Adjusted for better control
-
-      // Event listeners for buttons
-      document.getElementById('moveLeft').addEventListener('click', function () {
-        updatePosition('x', -0.1 * moveAmount);
-      });
-
-      document.getElementById('moveRight').addEventListener('click', function () {
-        updatePosition('x', 0.1 * moveAmount);
-      });
-
-      document.getElementById('moveUp').addEventListener('click', function () {
-        updatePosition('z', -0.1 * moveAmount);
-      });
-
-      document.getElementById('moveDown').addEventListener('click', function () {
-        updatePosition('z', 0.1 * moveAmount);
-      });
-
-      document.getElementById('scaleUp').addEventListener('click', function () {
-        updateScale(1.1);
-      });
-
-      document.getElementById('scaleDown').addEventListener('click', function () {
-        updateScale(0.9);
-      });
-
-      // Handle hamburger menu click
-      const hamburgerMenu = document.getElementById('hamburgerMenu');
-      const menuContent = document.getElementById('menuContent');
-      hamburgerMenu.addEventListener('click', function () {
-        menuContent.classList.toggle('hidden');
-      });
-
-      // Handle calibrate button click
-      const calibrateButton = document.getElementById('calibrateButton');
-      const controlButtons = document.getElementById('controlButtons');
-      calibrateButton.addEventListener('click', function () {
-        controlButtons.classList.toggle('hidden');
-        menuContent.classList.add('hidden'); // Hide menu after clicking calibrate
-        scaleModelEl.setAttribute('visible', scaleModelEl.getAttribute('visible') === false);
-      });
-
-      // Handle save calibration button
-      document.getElementById('saveCalibration').addEventListener('click', function () {
-        localStorage.setItem('calibrationData', JSON.stringify(calibrationData));
-        alert('Calibration data saved.');
-        controlButtons.classList.add('hidden');
-      });
-
-      // JSON data of photos https://www.publicalbum.org/blog/embedding-google-photos-albums
-      const photoData = {
-        "id": 4,
-        "result": {
-          "provider": "google-photos",
-          "url": "https:\/\/photos.app.goo.gl\/aGYZ8szkrFYThMX78",
-          "id": null,
-          "title": "PUBLIC: DNA Wedding",
-          "description": "10 new items added to shared album",
-          "mediaItems": [
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/1.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/2.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/3.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/4.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/5.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/6.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/7.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/8.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            },
-            {
-              "id": "AF1QipMSoLHOj7FTKGsxgMm4GlLMW13syureHIkuMs3z",
-              "description": null,
-              "url": "/images/9.jpg",
-              "mimetype": null,
-              "mediaMetadata": null
-            }
-          ],
-          "version": 1,
-          "timestamp": 1727886887
-        }
-      }
-
-      function setupAnimationListeners() {
-        const nftMarker = document.querySelector('#nftMarker');
-        bird1.pause();
-        bird2.pause();
-        bird3.pause();
-        bird1.addEventListener('animation-loop', () => {
-          console.log('Animation Finished');
-          //scaleModelEl.clip('*');
-          bird1.play();
-          bird3.play();
-          bird2.play();
-        })
-        nftMarker.addEventListener('markerFound', () => {
-          console.log('Marker Found');
-          bird1.play();
-          bird3.play();
-          bird2.play();
-        })
-        nftMarker.addEventListener('markerLost', () => {
-          console.log('Marker Found');
-          bird1.pause();
-          bird2.pause();
-          bird3.pause();
-        })
-        bird4.pause();
-        bird5.pause();
-        bird6.pause();
-        bird4.addEventListener('animation-loop', () => {
-          console.log('Animation Finished');
-          bird4.play();
-          bird5.play();
-          bird6.play();
-        });
-        nftMarker.addEventListener('markerFound', () => {
-          console.log('Marker Found');
-          bird4.play();
-          bird5.play();
-          bird6.play();
-        });
-        nftMarker.addEventListener('markerLost', () => {
-          console.log('Marker Lost');
-          bird4.pause();
-          bird5.pause();
-          bird6.pause();
-        });
-      }
-
-
-      // Function to create images dynamically
-      function createImages() {
-        const mediaItems = photoData.result.mediaItems;
-        if (!mediaItems || mediaItems.length === 0) {
-          console.warn('No media items found in photo data.');
-          return;
-        }
-
-        const nftMarker = document.querySelector('#nftMarker');
-
-        // Cache images array
-        const images = [];
-
-        // Parameters for positioning
-        const radius = 300; // Adjust as needed
-        const angleIncrement = (2 * Math.PI) / mediaItems.length;
-
-        for (let i = 0; i < mediaItems.length; i++) {
-          const mediaItem = mediaItems[i];
-
-          const imgEl = document.createElement('a-image');
-          imgEl.setAttribute('src', mediaItem.url);
-          imgEl.setAttribute('width', 1);  // Adjust image size as needed
-          imgEl.setAttribute('height', 0.5625);
-
-          // Calculate position in a circle
-          const angle = i * angleIncrement;
-          const x = radius * Math.cos(angle);
-          const z = radius * Math.sin(angle);
-          const y = 1; // Height above the marker
-
-          // Apply calibration position offsets
-          const position = {
-            x: x + calibrationData.positionOffset.x,
-            y: y + calibrationData.positionOffset.y,
-            z: z + calibrationData.positionOffset.z
-          };
-
-          imgEl.setAttribute('position', position);
-
-          // Apply calibration scale multiplier
-          const scaleMultiplier = calibrationData.scaleMultiplier || 1;
-          imgEl.setAttribute('scale', {
-            x: 200,
-            y: 200,
-            z: 200
-          });
-
-          imgEl.setAttribute('rotation', {
-            x: 90,
-            y: 0,
-            z: 180
-          });
-
-          // Cache the image element
-          images.push(imgEl);
-
-          // Append to the marker
-          nftMarker.appendChild(imgEl);
-        }
-
-        // Optionally, store the images array for future use
-      }
-
-      // Create images when the scene is loaded
-      const sceneEl = document.querySelector('a-scene');
-      if (sceneEl.hasLoaded) {
-        createImages();
-      } else {
-        sceneEl.addEventListener('loaded', createImages);
-      }
-    });
-  </script>
+  <!-- Modular JavaScript Files -->
+  <script src="js/entityManager.js"></script>
+  <script src="js/calibrationManager.js"></script>
+  <script src="js/animationManager.js"></script>
+  <script src="js/photoGalleryManager.js"></script>
+  <!-- CameraManager already loaded above -->
+  <script src="js/uiController.js"></script>
+  <script src="js/appController.js"></script>
+  <script src="js/main.js"></script>
 </body>
 
 </html>
