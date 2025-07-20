@@ -232,7 +232,7 @@ class PhotoGalleryManager {
 
     // Alternative layout: Floating cloud layout
     // Alternative layout: Floating cloud layout
-    calculateCloudPosition(index, imageWidth, imageHeight) {
+    calculateCloudPostion(index, imageWidth, imageHeight) {
         // Create a dynamic spiral-like arrangement
         const angle = index * (Math.PI * 0.5); // Increasing angle for each image
         const spacing = Math.max(imageWidth, imageHeight) * 1.2; // Use larger dimension for spacing
